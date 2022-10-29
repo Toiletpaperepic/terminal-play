@@ -7,14 +7,18 @@ use clitools::printinfo;
 fn main() {
     printinfo("Starting Terminal-Play");
 
-    let args: Vec<String> = env::args().collect(); 
-    let query = &args[1];
+    let mut args: Vec<String> = env::args().collect();
 
-    //to print info
-    let playinginfo = format!("playing {}" , query);
-    printinfo(&playinginfo);
-    //to play
-    play(query);
-    //
+    args.remove(0);
+
+    for x in &args {
+        //to print info
+        let playinginfo = format!("playing {}" , x);
+        printinfo(&playinginfo);
+
+        //to play the files
+        play(x)
+    }
+
     printinfo("Exiting")
 }

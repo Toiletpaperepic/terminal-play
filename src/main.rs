@@ -1,7 +1,15 @@
 mod play;
-mod command_line;
-use std::{env, process};
-use command_line::printinfo;
+mod log;
+use std::process;
+use clap::Parser;
+use log::printinfo;
+
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+
+struct Args {
+    files: Vec<String>,
+}
 
 fn main() {
     printinfo("Starting Terminal-Play");
@@ -12,10 +20,9 @@ fn main() {
     })
     .expect("Error setting Ctrl-C handler");
 
-    let mut args: Vec<String> = env::args().collect();
-    args.remove(0);
+    let args = Args::parse();
 
-    for x in &args {
+    for x in &args.files {
         //to print info
         let playinginfo = format!("Playing {}" , x);
         printinfo(&playinginfo);

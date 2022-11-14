@@ -20,7 +20,6 @@ fn main() {
     print(&bootmessage);
 
     if args.quiet {
-        //
         print("i Haven't implemented --quiet Yet lol")
     }
     

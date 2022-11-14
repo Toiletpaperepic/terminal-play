@@ -11,13 +11,15 @@ pub(crate) fn play(_arg:&str) {
     // Load a sound from a file, using a path relative to Cargo.toml
     let file = File::open(_arg).unwrap_or_else(|err| {
         eprint(&format!("{err}"));
-        process::exit(1)
+        //todo: make it Grab the exit code From {err}
+        process::exit(3)
     });
     
     // Decode that sound file into a source
     let source = Decoder::new(BufReader::new(file)).unwrap_or_else(|err| {
         eprint(&format!("{err}"));
-        process::exit(1)
+        //todo: make it Grab the exit code From {err}
+        process::exit(3)
     });
     
     sink.append(source);

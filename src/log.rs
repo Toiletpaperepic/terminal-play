@@ -1,6 +1,5 @@
 use chrono::{Datelike, Timelike, Utc};
 use ansi_term::Colour;
-use std::process;
 
 ///print info to the terminal
 pub(crate) fn print(_arg:&str){
@@ -34,6 +33,5 @@ pub(crate) fn eprint(_arg:&str){
     now.second(),
     _arg);
     
-    eprintln!("{}", Colour::Red.paint(errorinfo));
-    process::exit(1);
+    eprintln!("{}", Colour::Red.paint(errorinfo))
 }

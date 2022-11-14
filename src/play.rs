@@ -1,6 +1,7 @@
-use std::fs::File;
+use std::{fs::File, process};
 use std::io::BufReader;
 use rodio::{Decoder, OutputStream, Sink};
+use crate::log::eprint;
 
 ///plays files using rodio
 pub(crate) fn play(_arg:&str) {
@@ -8,9 +9,16 @@ pub(crate) fn play(_arg:&str) {
     let sink = Sink::try_new(&stream_handle).unwrap();
 
     // Load a sound from a file, using a path relative to Cargo.toml
-    let file = BufReader::new(File::open(_arg).unwrap());
+    let file = File::open(_arg).unwrap_or_else(|err| {
+        eprint(&format!("{err}"));
+        process::exit(1)
+    });
+    
     // Decode that sound file into a source
-    let source = Decoder::new(file).unwrap();
+    let source = Decoder::new(BufReader::new(file)).unwrap_or_else(|err| {
+        eprint(&format!("{err}"));
+        process::exit(1)
+    });
     
     sink.append(source);
 

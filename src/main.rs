@@ -3,6 +3,7 @@ mod log;
 use std::process;
 use clap::Parser;
 use log::{print, eprint};
+use play::play;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -32,7 +33,8 @@ fn main() {
 
     //Throw error if there is no files to play.
     if args.files.is_empty() {
-        eprint("No file found. exiting.")
+        eprint("No file found. exiting.");
+        process::exit(1)
     }
 
     for x in &args.files {
@@ -41,7 +43,7 @@ fn main() {
         print(&playinginfo);
 
         //to play the files
-       play::play(x)
+        play(x)
     }
 
     print("Exiting")

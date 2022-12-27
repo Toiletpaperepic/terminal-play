@@ -1,6 +1,6 @@
 mod play;
 mod log;
-use std::process;
+use std::{process, env, path::Path};
 use clap::Parser;
 use log::{print, eprint};
 use play::play;
@@ -11,6 +11,8 @@ use play::play;
 struct Args {
     #[arg(short, long)]
     quiet: bool,
+    #[arg(short, long)]
+    debug: bool,
     files: Vec<String> //get all Argument
 }
 
@@ -19,8 +21,12 @@ fn main() {
     let bootmessage = format!("Starting Terminal-Play. (version: {})", env!("CARGO_PKG_VERSION"));
     print(&bootmessage);
 
+    if args.debug {
+        env::set_var("RUST_BACKTRACE", "1");
+        dbg!(&args.files);
+    }
     if args.quiet {
-        print("i Haven't implemented --quiet Yet lol")
+        eprint("i Haven't implemented --quiet Yet lol")
     }
     
     //set the Ctrl+C Message.
@@ -36,13 +42,15 @@ fn main() {
         process::exit(1)
     }
 
-    for x in &args.files {
+    for file in &args.files {
+        //Find the file name
+        let path= Path::new(file).file_name().unwrap().to_str().unwrap();
         //to print info
-        let playinginfo = format!("Playing {}" , x);
+        let playinginfo = format!("Playing {}" , path);
         print(&playinginfo);
 
         //to play the files
-        play(x)
+        play(&file)
     }
 
     print("Exiting")

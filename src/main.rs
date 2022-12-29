@@ -44,9 +44,9 @@ fn main() {
 
     for file in &args.files {
         //Find the file name
-        let path= Path::new(file).file_name().unwrap().to_str().unwrap();
+        let path= Path::new(file).file_name().unwrap();
         //to print info
-        let playinginfo = format!("Playing {}" , path);
+        let playinginfo = format!("Playing {:?}" , path);
         print(&playinginfo);
 
         //to play the files

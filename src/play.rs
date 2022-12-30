@@ -19,7 +19,7 @@ pub(crate) fn play(_arg:&str) {
     let source = Decoder::new(BufReader::new(file)).unwrap_or_else(|err| {
         eprint(&format!("{err}"));
         //todo: make it Grab the exit code From {err}
-        process::exit(3)
+        process::exit(1)
     });
     
     sink.append(source);

@@ -18,12 +18,12 @@ pub(crate) fn print(_arg:&str){
     _arg);
 }
 
-pub(crate) fn eprint(_arg:&str){
+pub(crate) fn wprint(_arg:&str){
     let now = Utc::now();
     let (_is_common_era, year) = now.year_ce();
     let (_is_pm, hour) = now.hour12();
     
-    let errorinfo = format!("[{}-{:02}-{:02} {:?} {:02}:{:02}:{:02}] [ERROR]: {}" ,
+    let warnmessage = format!("[{}-{:02}-{:02} {:?} {:02}:{:02}:{:02}] [WARN]: {}" ,
     year,
     now.month(),
     now.day(),
@@ -33,5 +33,23 @@ pub(crate) fn eprint(_arg:&str){
     now.second(),
     _arg);
     
-    eprintln!("{}", Colour::Red.paint(errorinfo))
+    eprintln!("{}", Colour::Yellow.paint(warnmessage))
+}
+
+pub(crate) fn eprint(_arg:&str){
+    let now = Utc::now();
+    let (_is_common_era, year) = now.year_ce();
+    let (_is_pm, hour) = now.hour12();
+    
+    let errormessage = format!("[{}-{:02}-{:02} {:?} {:02}:{:02}:{:02}] [ERROR]: {}" ,
+    year,
+    now.month(),
+    now.day(),
+    now.weekday(),
+    hour,
+    now.minute(),
+    now.second(),
+    _arg);
+    
+    eprintln!("{}", Colour::Red.paint(errormessage));
 }

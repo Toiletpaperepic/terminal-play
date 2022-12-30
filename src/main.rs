@@ -1,9 +1,19 @@
+///////////////////////////////////////////
+//                                       //
+//                                       //
+//      Whoever is using this this       //
+//        is Just spaghetti code.        //
+//                                       //
+//                                       //
+///////////////////////////////////////////
 mod play;
+mod about;
 mod log;
 use std::{process, env, path::Path};
 use clap::Parser;
-use log::{print, eprint};
+use log::{print, eprint, wprint};
 use play::play;
+use about::about;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -13,20 +23,28 @@ struct Args {
     quiet: bool,
     #[arg(short, long)]
     debug: bool,
+    #[arg(long)]
+    noaudio: bool,
+    #[arg(short, long)]
+    about: bool,
     files: Vec<String> //get all Argument
 }
 
 fn main() {
     let args = Args::parse();
+    if args.about {about()} 
     let bootmessage = format!("Starting Terminal-Play. (version: {})", env!("CARGO_PKG_VERSION"));
     print(&bootmessage);
 
     if args.debug {
         env::set_var("RUST_BACKTRACE", "1");
         dbg!(&args.files);
+        dbg!(&args.quiet);
+        dbg!(&args.noaudio);
+        dbg!(&args.about);
     }
     if args.quiet {
-        eprint("i Haven't implemented --quiet Yet lol")
+        wprint("i Haven't implemented --quiet Yet")
     }
     
     //set the Ctrl+C Message.
@@ -42,15 +60,29 @@ fn main() {
         process::exit(1)
     }
 
+    if args.debug {
+        //Don't do anything
+    } else {
+        if args.noaudio {
+            wprint("No audio will play, --noaudio is Enabled")
+        }
+    }
+
     for file in &args.files {
-        //Find the file name
+        //Find's the file name
         let path= Path::new(file).file_name().unwrap();
-        //to print info
+        //print the playing info
         let playinginfo = format!("Playing {:?}" , path);
         print(&playinginfo);
 
-        //to play the files
-        play(&file)
+        //play's the files
+        if args.noaudio {
+            if args.debug {
+                eprint("Can't play, --noaudio is Enabled. Skipping.")
+            }
+        } else {
+            play(&file)
+        }
     }
 
     print("Exiting")

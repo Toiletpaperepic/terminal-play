@@ -1,17 +1,18 @@
-///////////////////////////////////////////
-//                                       //
-//                                       //
-//      Whoever is using this this       //
-//        is Just spaghetti code.        //
-//                                       //
-//                                       //
-///////////////////////////////////////////
+//=================================================
+//                 Terminal-Play          
+//
+//               A simple MP3 Player        
+//
+//https://github.com/Toiletpaperepic/terminal-play
+//
+//=================================================
+
 mod play;
 mod about;
 mod log;
 use std::{process, env, path::Path};
 use clap::Parser;
-use log::{print, eprint, wprint};
+use log::*;
 use play::play;
 use about::about;
 
@@ -21,18 +22,28 @@ use about::about;
 struct Args {
     #[arg(short, long)]
     quiet: bool,
-    #[arg(short, long)]
-    debug: bool,
+
     #[arg(long)]
-    noaudio: bool,
+    debug: bool,
+
+    #[arg(long)]
+    noaudio: bool, //for disable audio
+
+    #[arg(short,long)]
+    _loop: bool,
+
     #[arg(short, long)]
-    about: bool,
-    files: Vec<String> //get all Argument
+    about: bool, //for about.rs
+
+    files: Vec<String> //get all audio files for the Command line
 }
+
+pub(crate) static mut QUIET: &bool = &false;
 
 fn main() {
     let args = Args::parse();
-    if args.about {about()} 
+    if args.about {about()}
+    if args.quiet {unsafe {QUIET = &true;}}
     let bootmessage = format!("Starting Terminal-Play. (version: {})", env!("CARGO_PKG_VERSION"));
     print(&bootmessage);
 
@@ -43,10 +54,7 @@ fn main() {
         dbg!(&args.noaudio);
         dbg!(&args.about);
     }
-    if args.quiet {
-        wprint("i Haven't implemented --quiet Yet")
-    }
-    
+
     //set the Ctrl+C Message.
     ctrlc::set_handler(move || {
         print("Received Ctrl+C exiting.");
@@ -57,33 +65,42 @@ fn main() {
     //Throw error if there is no files to play.
     if args.files.is_empty() {
         eprint("No file found. exiting.");
-        process::exit(1)
+        process::exit(0)
     }
 
     if args.debug {
         //Don't do anything
     } else {
         if args.noaudio {
-            wprint("No audio will play, --noaudio is Enabled")
+            warn("No audio will play, --noaudio is Enabled")
         }
     }
 
-    for file in &args.files {
-        //Find's the file name
-        let path= Path::new(file).file_name().unwrap();
-        //print the playing info
-        let playinginfo = format!("Playing {:?}" , path);
-        print(&playinginfo);
+    loop {
+        for file in &args.files {
+            //Find's the file name
+            let path= Path::new(file).file_name().unwrap();
+            //print the playing info
+            let playinginfo = format!("Playing {:?}" , path);
+            print(&playinginfo);
 
-        //play's the files
-        if args.noaudio {
-            if args.debug {
-                eprint("Can't play, --noaudio is Enabled. Skipping.")
+            //play's the files
+            if args.noaudio {
+                if args.debug {
+                    eprint("Can't play, --noaudio is Enabled. Skipping.")
+                }
+            } else {
+                play(&file)
             }
-        } else {
-            play(&file)
+        }
+
+        if args._loop {
+            //
+        }
+        else {
+            break;
         }
     }
-
+    
     print("Exiting")
 }

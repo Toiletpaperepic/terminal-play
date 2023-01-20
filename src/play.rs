@@ -1,3 +1,12 @@
+//=================================================
+//                 Terminal-Play          
+//
+//               A simple MP3 Player        
+//
+//https://github.com/Toiletpaperepic/terminal-play
+//
+//=================================================
+
 use std::{fs::File, process};
 use std::io::BufReader;
 use rodio::{Decoder, OutputStream, Sink};

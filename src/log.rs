@@ -1,5 +1,15 @@
+//=================================================
+//                 Terminal-Play          
+//
+//               A simple MP3 Player        
+//
+//https://github.com/Toiletpaperepic/terminal-play
+//
+//=================================================
+
 use chrono::{Datelike, Timelike, Utc};
 use ansi_term::Colour;
+use crate::QUIET;
 
 ///print info to the terminal
 pub(crate) fn print(_arg:&str){
@@ -7,7 +17,7 @@ pub(crate) fn print(_arg:&str){
     let (_is_common_era, year) = now.year_ce();
     let (_is_pm, hour) = now.hour12();
 
-    println!("[{}-{:02}-{:02} {:?} {:02}:{:02}:{:02}] [INFO]: {}" ,
+    let println_message = format!("[{}-{:02}-{:02} {:?} {:02}:{:02}:{:02}] [INFO]: {}" ,
     year,
     now.month(),
     now.day(),
@@ -16,14 +26,23 @@ pub(crate) fn print(_arg:&str){
     now.minute(),
     now.second(),
     _arg);
+
+    unsafe {
+        if *QUIET {
+        
+        }
+        else {
+            println!("{}", println_message)
+        }
+    }  
 }
 
-pub(crate) fn wprint(_arg:&str){
+pub(crate) fn warn(_arg:&str){
     let now = Utc::now();
     let (_is_common_era, year) = now.year_ce();
     let (_is_pm, hour) = now.hour12();
     
-    let warnmessage = format!("[{}-{:02}-{:02} {:?} {:02}:{:02}:{:02}] [WARN]: {}" ,
+    let warn_message = format!("[{}-{:02}-{:02} {:?} {:02}:{:02}:{:02}] [WARN]: {}" ,
     year,
     now.month(),
     now.day(),
@@ -33,7 +52,14 @@ pub(crate) fn wprint(_arg:&str){
     now.second(),
     _arg);
     
-    eprintln!("{}", Colour::Yellow.paint(warnmessage))
+    unsafe {
+        if *QUIET {
+        
+        }
+        else {
+            eprintln!("{}", Colour::Yellow.paint(warn_message))
+        }
+    } 
 }
 
 pub(crate) fn eprint(_arg:&str){
@@ -41,7 +67,7 @@ pub(crate) fn eprint(_arg:&str){
     let (_is_common_era, year) = now.year_ce();
     let (_is_pm, hour) = now.hour12();
     
-    let errormessage = format!("[{}-{:02}-{:02} {:?} {:02}:{:02}:{:02}] [ERROR]: {}" ,
+    let error_message = format!("[{}-{:02}-{:02} {:?} {:02}:{:02}:{:02}] [ERROR]: {}" ,
     year,
     now.month(),
     now.day(),
@@ -51,5 +77,12 @@ pub(crate) fn eprint(_arg:&str){
     now.second(),
     _arg);
     
-    eprintln!("{}", Colour::Red.paint(errormessage));
+    unsafe {
+        if *QUIET {
+        
+        }
+        else {
+            eprintln!("{}", Colour::Red.paint(error_message));
+        }
+    } 
 }

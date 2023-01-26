@@ -7,14 +7,14 @@
 //
 //=================================================
 
-mod play;
-mod about;
-mod log;
 use std::{process, env, path::Path};
 use clap::Parser;
-use log::*;
-use play::play;
 use about::about;
+use play::play;
+use log::*;
+mod about;
+mod play;
+mod log;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -101,6 +101,6 @@ fn main() {
             break;
         }
     }
-    
+
     print("Exiting")
 }

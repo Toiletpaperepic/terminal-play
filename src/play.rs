@@ -7,8 +7,7 @@
 //
 //=================================================
 
-use std::{fs::File, process};
-use std::io::BufReader;
+use std::{fs::File, process, io::BufReader};
 use rodio::{Decoder, OutputStream, Sink};
 use crate::log::eprint;
 

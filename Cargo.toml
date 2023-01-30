@@ -11,3 +11,6 @@ ctrlc = "3.2.4"
 chrono = "0.4.23"
 clap = { version = "4.1.1", features = ["derive"] }
 rodio = "0.16.0"
+tui = "0.19.0"
+crossterm = "0.25.0"
+rand = "0.8.5"

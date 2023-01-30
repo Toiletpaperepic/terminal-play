@@ -7,14 +7,18 @@
 //
 //=================================================
 
-use std::{process, env, path::Path};
+use std::{process, env, path::Path, io, time::Duration};
 use clap::Parser;
 use about::about;
+use crate::crossterm::run;
 use play::play;
 use log::*;
+mod crossterm;
 mod about;
 mod play;
 mod log;
+mod app;
+mod ui;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -27,25 +31,32 @@ struct Args {
     debug: bool,
 
     #[arg(long)]
-    noaudio: bool, //for disable audio
+    noaudio: bool, ///for disable audio
 
     #[arg(short,long)]
     _loop: bool,
 
     #[arg(short, long)]
-    about: bool, //for about.rs
+    about: bool, ///to run about.rs
+
+    #[arg(short, long)]
+    tui: bool,
+
+    /// whether unicode symbols are used to improve the overall look of the app
+    #[arg(short, long, default_value = "true")]
+    enhanced_graphics: bool,
 
     files: Vec<String> //get all audio files for the Command line
 }
 
 pub(crate) static mut QUIET: &bool = &false;
 
-fn main() {
+fn main() -> Result<(), io::Error> {
     let args = Args::parse();
-    if args.about {about()}
-    if args.quiet {unsafe {QUIET = &true;}}
+    if args.about {about()} if args.quiet {unsafe {QUIET = &true;}}
     let bootmessage = format!("Starting Terminal-Play. (version: {})", env!("CARGO_PKG_VERSION"));
     print(&bootmessage);
+    let preset_tick_rate:u64 = 250;
 
     if args.debug {
         env::set_var("RUST_BACKTRACE", "1");
@@ -53,6 +64,12 @@ fn main() {
         dbg!(&args.quiet);
         dbg!(&args.noaudio);
         dbg!(&args.about);
+        dbg!(preset_tick_rate);
+    }
+
+    if args.enhanced_graphics {
+        let tick_rate = Duration::from_millis(preset_tick_rate);
+        run(tick_rate, args.enhanced_graphics);
     }
 
     //set the Ctrl+C Message.
@@ -102,5 +119,6 @@ fn main() {
         }
     }
 
-    print("Exiting")
+    print("Exiting");
+    Ok(())
 }

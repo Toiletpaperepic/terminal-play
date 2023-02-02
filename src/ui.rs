@@ -35,14 +35,5 @@ fn draw_first_tab<B>(f: &mut Frame<B>, app: &mut App, area: Rect)
 where
     B: Backend,
 {
-    let chunks = Layout::default()
-        .constraints(
-            [
-                Constraint::Length(9),
-                Constraint::Min(8),
-                Constraint::Length(7),
-            ]
-            .as_ref(),
-        )
-        .split(area);
+    
 }

@@ -51,7 +51,7 @@ struct Args {
 
 pub(crate) static mut QUIET: &bool = &false;
 
-fn main() -> Result<(), io::Error> {
+fn main() {
     let args = Args::parse();
     if args.about {about()} if args.quiet {unsafe {QUIET = &true;}}
     let bootmessage = format!("Starting Terminal-Play. (version: {})", env!("CARGO_PKG_VERSION"));
@@ -120,5 +120,4 @@ fn main() -> Result<(), io::Error> {
     }
 
     print("Exiting");
-    Ok(())
 }

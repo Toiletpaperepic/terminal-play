@@ -8,11 +8,11 @@
 //=================================================
 
 use std::{fs::File, process, io::{BufReader, stdin}, thread};
+use log::{error};
 use rodio::{Decoder, OutputStream, Sink};
-use crate::log::Console;
 
 ///plays files using rodio
-pub(crate) fn play(_arg:&str, console: &mut Console) {
+pub(crate) fn play(_arg:&str) {
     let (_stream, stream_handle) = OutputStream::try_default().unwrap();
     let sink = Sink::try_new(&stream_handle).unwrap();
     let stdin = stdin();
@@ -20,13 +20,13 @@ pub(crate) fn play(_arg:&str, console: &mut Console) {
 
     // Load a sound from a file, using a path relative to Cargo.toml
     let file = File::open(_arg).unwrap_or_else(|err| {
-        console.error(&format!("{err}"));
+        error!("{err}");
         process::exit(3)
     });
     
     // Decode that sound file into a source
     let source = Decoder::new(BufReader::new(file)).unwrap_or_else(|err| {
-        console.error(&format!("{err}"));
+        error!("{err}");
         process::exit(1)
     });
     

@@ -1,13 +1,13 @@
 [package]
 name = "terminal-play"
-version = "0.2.6"
+version = "0.2.4"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 ansi_term = "0.12.1"
-ctrlc = "3.2.5"
+ctrlc = "3.2.4"
 chrono = "0.4.23"
-clap = { version = "4.1.4", features = ["derive"] }
+clap = { version = "4.1.1", features = ["derive"] }
 rodio = "0.16.0"

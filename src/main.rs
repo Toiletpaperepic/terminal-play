@@ -7,11 +7,11 @@
 //
 //=================================================
 
-use env_logger::Env;
-use log::{debug, error, info};
-use std::io::Write;
 use chrono::{Datelike, Timelike, Utc};
+use log::{debug, error, info, warn};
 use std::{process, env, path::Path};
+use env_logger::{Env, fmt::Color};
+use std::io::Write;
 use clap::Parser;
 use about::about;
 use play::play;
@@ -37,13 +37,18 @@ struct Args {
     files: Vec<String> //get all audio files for the Command line
 }
 
-pub(crate) static mut DEBUG: &bool = &false;
-
 //todo: wait until panic::update_hook Gets out of development.
 
 fn main() {
     let args = Args::parse(); set_debug(&args); if args.about {about()}
     info!("Starting Terminal-Play. (version: {})", env!("CARGO_PKG_VERSION"));
+
+    //set the Ctrl+C Message.
+    ctrlc::set_handler(move || {
+        warn!("Received Ctrl+C exiting.");
+        process::exit(0);
+    })
+    .expect("Error setting Ctrl-C handler");
 
     //Throw error if there is no files to play.
     if args.files.is_empty() {
@@ -62,7 +67,7 @@ fn main() {
             drop(playinginfo);
 
             //play's the files
-            play(&file_path)
+            play(&file_path);
         }
 
         if args._loop {
@@ -78,16 +83,26 @@ fn main() {
 }
 
 fn set_debug(args: &Args) {
-    let now = Utc::now();
-    let (_is_common_era, year) = now.year_ce();
-    let (_is_pm, hour) = now.hour12();
-
     if args.debug {
         env::set_var("RUST_BACKTRACE", "1");
-        unsafe {DEBUG = &true;}
+        env::set_var("RUST_LOG", "debug");
     }
 
     env_logger::Builder::from_env(Env::default().default_filter_or("info")).format(move |buf, record| {
+        let now = Utc::now();
+        let (_is_common_era, year) = now.year_ce();
+        let (_is_pm, hour) = now.hour12();
+        let mut level_style = buf.style();
+
+        if format!("{}", record.level()) == "DEBUG" {
+            level_style.set_color(Color::Rgb(80, 80, 80)).set_bold(true);
+        } else if format!("{}", record.level()) == "ERROR" {
+            level_style.set_color(Color::Red).set_bold(true);
+        } else if format!("{}", record.level()) == "WARN" {
+            level_style.set_color(Color::Yellow).set_bold(true);
+        }
+
+
         writeln!(buf, "[{}-{:02}-{:02} {:?} {:02}:{:02}:{:02}] [{}]: {}",
         year,
         now.month(),
@@ -95,7 +110,9 @@ fn set_debug(args: &Args) {
         now.weekday(),
         hour,
         now.minute(),
-        now.second(), record.level(), record.args())
+        now.second(), 
+        level_style.value(record.level()), 
+        record.args())
     }).init();
 
     debug!("OS: {} | Family: {} | CPU: {} | Debug: {}",

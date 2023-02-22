@@ -8,7 +8,7 @@
 //=================================================
 
 use std::{fs::File, process, io::{BufReader, stdin}, thread};
-use log::{error};
+use log::{error, debug, info};
 use rodio::{Decoder, OutputStream, Sink};
 
 ///plays files using rodio
@@ -32,23 +32,33 @@ pub(crate) fn play(_arg:&str) {
     
     sink.append(source);
 
-    thread::scope(|s| {
+    let _Handler = thread::scope(|s| {
         s.spawn(|| {
             loop {
                 s_buffer.clear();
                 stdin.read_line(&mut s_buffer).unwrap();
                 let line = s_buffer.replace(|x| x == '\n' || x == '\r', "");
                 
-                if line == "exit" {
+                if line.starts_with("e") {
                     sink.stop();
-                    break;
+                    info!("Exiting");
+                    process::exit(0);
+                } else if line.starts_with("h") {
+                    println!("help: print of this command\nexit: exits the program\nvolume: set the volume Level")
                 } else if line.starts_with("v") {
                     let v: Vec<&str> = line.split(' ').collect();
-                    //if v[1] == f32 {}
-                    let v_f32:f32 = v[1].parse::<f32>().unwrap();
-                    sink.set_volume(v_f32);
+                    if v.len() < 1 {
+                        error!("unexpected argument: empty message.")
+                    } else if v[1].parse::<f32>().is_ok() {
+                        debug!("set volume to {}", v[1]); 
+                        let v_f32:f32 = v[1].parse::<f32>().unwrap();
+                        sink.set_volume(v_f32);
+                    } else {
+                        error!("Not a number")
+                    }
+                } else {
+                    error!("Unknown command")
                 }
-                
             }
         });
     });

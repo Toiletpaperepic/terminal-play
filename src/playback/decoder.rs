@@ -9,8 +9,8 @@
 
 use std::{fs::File, process, io::BufReader, path::{Path, PathBuf}};
 use rodio::{Decoder, Source, source::Buffered};
-use log::error;
 
+#[derive(Clone)]
 pub(crate) struct Audio {
     pub source: Buffered<Decoder<BufReader<File>>>,
     pub path: String

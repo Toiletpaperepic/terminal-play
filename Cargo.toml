@@ -1,14 +1,14 @@
 [package]
 name = "terminal-play"
-version = "0.3.1"
+version = "0.3.2"
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-clap = { version = "4.1.4", features = ["derive"] }
-env_logger = "0.10.0"
-chrono = "0.4.26"
-rodio = "0.16.0"
-ctrlc = "3.4.0"
-log = "0.4.17"
+clap = { version = "4.4.3", features = ["derive"] }
+log = { version = "0.4.20", features = ["std"] }
+chrono = "0.4.31"
+rodio = "0.17.1"
+ctrlc = "3.4.1"
+shlex = "1.2.0"

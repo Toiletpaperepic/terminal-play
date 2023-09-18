@@ -7,24 +7,22 @@
 //
 //=================================================
 
-use log::{debug, error, info, warn};
-use crate::decoder::decoder_all;
-use crate::common::set_debug;
+#[macro_use] extern crate log;
+
+use crate::playback::{decoder::decoder_all, play::play};
+use common::{logger::init, about::about};
 use std::{process, env, path::PathBuf};
-use crate::play::play;
 use clap::Parser;
-use about::about;
-mod decoder;
+use log::LevelFilter;
+mod playback;
 mod common;
-mod about;
-mod play;
 
 #[derive(Parser)]
-#[command(author, version, about, long_about = None)]
+#[command(author, about, long_about = None)]
 struct Args {
     ///Prints about and exit
     #[arg(short, long)]
-    about: bool, 
+    version: bool, 
 
     ///opens documentation
     #[arg(short, long)]
@@ -32,14 +30,22 @@ struct Args {
 
     ///loops
     #[arg(short, long)]
-    _loop: bool,
+    repeat: bool,
 
     //get all audio files for the Command line
-    files: Vec<PathBuf> 
+    files: Vec<PathBuf>,
+
+    ///set the log level.
+    #[arg(short, long)]
+    log_level: Option<LevelFilter>
 }
 
 fn main() {
-    let args = Args::parse(); set_debug(); if args.about {about()}
+    let args = Args::parse(); 
+    init(args.log_level.unwrap_or_else(|| LevelFilter::Info)).unwrap(); 
+    if args.version {
+        about()
+    }
     info!("Starting Terminal-Play. (version: {})", env!("CARGO_PKG_VERSION"));
 
     //set the Ctrl+C Message.
@@ -55,25 +61,7 @@ fn main() {
         process::exit(0)
     }
 
-    let sources = decoder_all(args.files);
-
-    loop {
-        for file_path in &sources {
-            let playinginfo = format!("Playing {:?}" , file_path.path);
-            info!("{}", &playinginfo);
-            drop(playinginfo);
-
-            //play's the files
-            play(file_path);
-        }
-
-        if args._loop {
-            //
-        }
-        else {
-            break;
-        }
-    }
+    play(decoder_all(args.files), args.repeat);
 
     info!("Exiting");
 }
